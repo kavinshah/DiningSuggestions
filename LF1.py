@@ -22,7 +22,11 @@ def validateSlot(event):
     phone_number = event["currentIntent"]["slots"]["phone_number"]
     Message = None
     
-    if (cuisine is not None and cuisine not in ["chinese","asian","oriental","italian","mexican","japanese","indian"]):
+    if(location is not None and location.lower() not in ["new york", "manhattan", "new-york"]):
+        location = None
+        Message = "Sorry, valid locations are New York or Manhattan"
+        slotToElicit = "location"
+    elif (cuisine is not None and cuisine not in ["chinese","asian","oriental","italian","mexican","japanese","indian"]):
         cuisine = None
         Message = "Sorry, valid cuisines are chinese, asian, oriental, italian, mexican, japanese, indian"
         slotToElicit = "cuisine"
