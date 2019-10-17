@@ -1,0 +1,56 @@
+<html>
+<body>
+<textarea rows="20" cols="200" name="msgs_div" form="usrform" id = "msgs_div" style="height: 85%;width:100%"></textarea>
+<br><br>
+<input type="text" id="chatInput" placeholder="Type a message" style = "width : 100%" #queryMessage />
+<br><br>
+<input id="msg_send_btn" type="button" value = "submit" onclick = "reply_click(this.id)">
+<script type="text/javascript" src="lib/axios/dist/axios.standalone.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/hmac-sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/rollups/sha256.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/hmac.js"></script>
+<script type="text/javascript" src="lib/CryptoJS/components/enc-base64.js"></script>
+<script type="text/javascript" src="lib/url-template/url-template.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/sigV4Client.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/apiGatewayClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/simpleHttpClient.js"></script>
+<script type="text/javascript" src="lib/apiGatewayCore/utils.js"></script>
+<script type="text/javascript" src="apigClient.js"></script>
+<script type="text/javascript">
+
+	var messages = []
+	var container = document.getElementById("msgs_div");
+	var apigClient = apigClientFactory.newClient();
+	render();
+	
+	function reply_click(clicked_id)
+	{
+		query = document.getElementById("chatInput").value;
+		console.log(query);
+		callChatApi({ "userQuery": query });
+	}
+	
+	function callChatApi(query) {
+		apigClient.chatbotPost({}, query, {}).then(function (result) {
+			let msg = { query: query.userQuery, response: result.data.body }
+            messages.push(msg)
+            render();
+        }).catch(function (result) {
+            console.log(result);
+        });
+    }
+	
+	function render()
+	{
+		container.innerHTML = "";
+		for (var i = 0; i < messages.length; i++) {
+			let message = messages[i];
+			container.innerHTML += "\nMe:\t" + message.query + "\n\nBot:\t" + message.response + "\n";
+			var objDiv = document.getElementById("msgs_div");
+			objDiv.scrollTop = objDiv.scrollHeight;
+		}
+	}
+	
+</script>
+</body>
+</html>
